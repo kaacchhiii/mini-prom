@@ -74,6 +74,46 @@ This codebase is a great starting point for developers who want to understand:
 *   **Race Conditions**: Why you can't just write to a map from multiple threads and how `Mutexes` solve this.
 *   **Operational Patterns**: Why "Silent Failures" are bad (we added logging!) and why "Unbounded Growth" is dangerous (we added retention!).
 
+## Integration with Your Own Project
+
+If you want to use Mini Prometheus to monitor **your own application**, follow these two steps:
+
+### 1. Expose Metrics in Your App
+Your application needs an HTTP endpoint (e.g., `/metrics`) that returns data in the following plain text format:
+```text
+metric_name value
+another_metric 123.45
+```
+*   **Rules**:
+    *   One metric per line.
+    *   Format: `Name` followed by a space and a `Float` or `Integer`.
+    *   Lines starting with `#` are ignored (comments/types).
+
+**Example (Node.js/Express):**
+```javascript
+app.get('/metrics', (req, res) => {
+    res.set('Content-Type', 'text/plain');
+    res.send(`
+        api_requests_total ${requestCount}
+        active_sessions ${sessions.length}
+        memory_usage_mb ${process.memoryUsage().heapUsed / 1024 / 1024}
+    `);
+});
+```
+
+### 2. Update Configuration
+Open `config.yaml` and add your application's URL to the targets list.
+
+```yaml
+targets:
+  - url: http://localhost:8081/metrics  # The dummy target (optional)
+    interval: 5s
+  - url: http://your-app-host:3000/metrics # [!] ADD THIS LINE
+    interval: 10s
+```
+
+Restart Mini Prometheus, and it will essentially start scraping your application!
+
 ## Configuration
 Adjust `config.yaml` to change behavior:
 ```yaml
