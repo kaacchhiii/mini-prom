@@ -1,9 +1,10 @@
 package config
 
 import (
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"time"
+
+	"gopkg.in/yaml.v2"
 )
 
 type Target struct {
@@ -11,8 +12,18 @@ type Target struct {
 	Interval time.Duration `yaml:"interval"`
 }
 
+type ServerConfig struct {
+	Port int `yaml:"port"`
+}
+
+type StorageConfig struct {
+	Retention time.Duration `yaml:"retention"`
+}
+
 type Config struct {
-	Targets []Target `yaml:"targets"`
+	Server  ServerConfig  `yaml:"server"`
+	Storage StorageConfig `yaml:"storage"`
+	Targets []Target      `yaml:"targets"`
 }
 
 func LoadConfig(filename string) (*Config, error) {

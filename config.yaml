@@ -1,3 +1,9 @@
+server:
+  port: 9090
+
+storage:
+  retention: 10m
+
 targets:
   - url: http://localhost:8081/metrics
     interval: 5s

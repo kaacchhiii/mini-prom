@@ -9,7 +9,7 @@ import (
 	"mini-prometheus/storage"
 )
 
-func StartServer(store *storage.MemoryStorage) {
+func StartServer(store *storage.MemoryStorage, port int) {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" {
 			w.Header().Set("Content-Type", "text/html")
@@ -25,7 +25,9 @@ func StartServer(store *storage.MemoryStorage) {
 		http.NotFound(w, r)
 	})
 
-	http.ListenAndServe(":9090", nil)
+	addr := fmt.Sprintf(":%d", port)
+	fmt.Printf("Server starting on port %d...\n", port)
+	http.ListenAndServe(addr, nil)
 }
 
 func metricsHandler(store *storage.MemoryStorage, w http.ResponseWriter, r *http.Request) {
